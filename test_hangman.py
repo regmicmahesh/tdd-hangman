@@ -18,7 +18,7 @@ class TestHangmanGame(unittest.TestCase):
         self.assertEqual(game.lives, 6)
         self.assertEqual(game.state, GameState.PLAYING)
         self.assertIsNotNone(game.target)
-        self.assertFalse(' ' in game.target)  # Basic should be single word
+        self.assertFalse(" " in game.target)  # Basic should be single word
 
     def test_game_initialization_intermediate(self):
         # Test that intermediate game sets up correctly
@@ -30,51 +30,51 @@ class TestHangmanGame(unittest.TestCase):
 
     def test_display_word_initial(self):
         # Test that word shows as underscores at the start
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
+        with patch.object(self.basic_game, "target", "PYTHON"):
             display = self.basic_game.get_display_word()
-            self.assertEqual(display, '_ _ _ _ _ _')
+            self.assertEqual(display, "_ _ _ _ _ _")
 
     def test_display_phrase_initial(self):
         # Test that phrases show underscores with proper spacing
-        with patch.object(self.intermediate_game, 'target', 'HELLO WORLD'):
+        with patch.object(self.intermediate_game, "target", "HELLO WORLD"):
             display = self.intermediate_game.get_display_word()
-            self.assertEqual(display, '_ _ _ _ _   _ _ _ _ _')
+            self.assertEqual(display, "_ _ _ _ _   _ _ _ _ _")
 
     def test_valid_guess_letter(self):
         # Test guessing a letter that's in the word
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
-            result = self.basic_game.make_guess('P')
+        with patch.object(self.basic_game, "target", "PYTHON"):
+            result = self.basic_game.make_guess("P")
             self.assertTrue(result)
-            self.assertEqual(self.basic_game.get_display_word(), 'P _ _ _ _ _')
-            self.assertEqual(self.basic_game.lives, 6)  # Lives shouldn't change
+            self.assertEqual(self.basic_game.get_display_word(), "P _ _ _ _ _")
+            self.assertEqual(self.basic_game.lives, 6)
 
     def test_invalid_guess_letter(self):
         # Test guessing a letter that's NOT in the word
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
-            result = self.basic_game.make_guess('Z')
+        with patch.object(self.basic_game, "target", "PYTHON"):
+            result = self.basic_game.make_guess("Z")
             self.assertFalse(result)
-            self.assertEqual(self.basic_game.get_display_word(), '_ _ _ _ _ _')
+            self.assertEqual(self.basic_game.get_display_word(), "_ _ _ _ _ _")
             self.assertEqual(self.basic_game.lives, 5)  # Should lose a life
 
     def test_multiple_occurrences_revealed(self):
         # Test that all instances of a letter are revealed at once
-        with patch.object(self.basic_game, 'target', 'HELLO'):
-            self.basic_game.make_guess('L')
+        with patch.object(self.basic_game, "target", "HELLO"):
+            self.basic_game.make_guess("L")
             display = self.basic_game.get_display_word()
-            self.assertEqual(display, '_ _ L L _')
+            self.assertEqual(display, "_ _ L L _")
 
     def test_game_won(self):
         # Test winning by guessing all letters
-        with patch.object(self.basic_game, 'target', 'CAT'):
-            self.basic_game.make_guess('C')
-            self.basic_game.make_guess('A')
-            self.basic_game.make_guess('T')
+        with patch.object(self.basic_game, "target", "CAT"):
+            self.basic_game.make_guess("C")
+            self.basic_game.make_guess("A")
+            self.basic_game.make_guess("T")
             self.assertEqual(self.basic_game.state, GameState.WON)
 
     def test_game_lost(self):
         # Test losing by running out of lives
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
-            wrong_letters = ['Z', 'X', 'Q', 'W', 'K', 'J']  # 6 wrong guesses
+        with patch.object(self.basic_game, "target", "PYTHON"):
+            wrong_letters = ["Z", "X", "Q", "W", "K", "J"]  # 6 wrong guesses
             for letter in wrong_letters:
                 self.basic_game.make_guess(letter)
             self.assertEqual(self.basic_game.state, GameState.LOST)
@@ -82,38 +82,38 @@ class TestHangmanGame(unittest.TestCase):
 
     def test_repeated_guess_same_result(self):
         # Test that guessing the same letter twice doesn't change anything
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
-            result1 = self.basic_game.make_guess('P')
+        with patch.object(self.basic_game, "target", "PYTHON"):
+            result1 = self.basic_game.make_guess("P")
             lives_after_first = self.basic_game.lives
-            
-            result2 = self.basic_game.make_guess('P')  # Same guess again
+
+            result2 = self.basic_game.make_guess("P")  # Same guess again
             self.assertEqual(result1, result2)
             self.assertEqual(self.basic_game.lives, lives_after_first)
 
     def test_case_insensitive_guessing(self):
         # Test that lowercase letters work the same as uppercase
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
-            result = self.basic_game.make_guess('p')  # lowercase
+        with patch.object(self.basic_game, "target", "PYTHON"):
+            result = self.basic_game.make_guess("p")  # lowercase
             self.assertTrue(result)
-            self.assertEqual(self.basic_game.get_display_word(), 'P _ _ _ _ _')
+            self.assertEqual(self.basic_game.get_display_word(), "P _ _ _ _ _")
 
     def test_invalid_input_handling(self):
         # Test that invalid inputs raise errors
         with self.assertRaises(ValueError):
-            self.basic_game.make_guess('')  # Empty string
+            self.basic_game.make_guess("")  # Empty string
         with self.assertRaises(ValueError):
-            self.basic_game.make_guess('AB')  # Multiple letters
+            self.basic_game.make_guess("AB")  # Multiple letters
         with self.assertRaises(ValueError):
-            self.basic_game.make_guess('1')  # Number
+            self.basic_game.make_guess("1")  # Number
 
     def test_get_guessed_letters(self):
         # Test that we can get a list of guessed letters
-        with patch.object(self.basic_game, 'target', 'PYTHON'):
-            self.basic_game.make_guess('P')
-            self.basic_game.make_guess('Z')
+        with patch.object(self.basic_game, "target", "PYTHON"):
+            self.basic_game.make_guess("P")
+            self.basic_game.make_guess("Z")
             guessed = self.basic_game.get_guessed_letters()
-            self.assertIn('P', guessed)
-            self.assertIn('Z', guessed)
+            self.assertIn("P", guessed)
+            self.assertIn("Z", guessed)
 
     def test_timer_start(self):
         # Test that timer starts correctly
@@ -130,7 +130,7 @@ class TestHangmanGame(unittest.TestCase):
 
     def test_timer_timeout(self):
         # Test that timer correctly detects timeout
-        with patch.object(self.basic_game, 'timer_start', time.time() - 16):
+        with patch.object(self.basic_game, "timer_start", time.time() - 16):
             self.assertTrue(self.basic_game.is_time_up())
             self.assertEqual(self.basic_game.get_remaining_time(), 0)
 
@@ -165,5 +165,5 @@ class TestGameEnums(unittest.TestCase):
         self.assertEqual(GameState.LOST.value, "lost")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
