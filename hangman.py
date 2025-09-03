@@ -1,3 +1,10 @@
+"""
+Hangman Game Logic - Core game mechanics and state management.
+
+This module contains the HangmanGame class that handles the game logic,
+including word selection, guess processing, timer functionality, and game state management.
+"""
+
 import random
 import time
 from enum import Enum
@@ -5,17 +12,23 @@ from typing import Set, List, Optional
 
 
 class GameLevel(Enum):
+    """Enumeration for game difficulty levels."""
+
     BASIC = "basic"
     INTERMEDIATE = "intermediate"
 
 
 class GameState(Enum):
+    """Enumeration for game states."""
+
     PLAYING = "playing"
     WON = "won"
     LOST = "lost"
 
 
 class HangmanGame:
+    """Main game class that handles all hangman game logic."""
+
     # Word lists for the different difficulty levels
     BASIC_WORDS = [
         "PYTHON",
@@ -48,6 +61,7 @@ class HangmanGame:
     ]
 
     def __init__(self, level: GameLevel):
+        """Initialize a new hangman game with the specified difficulty level."""
         self.level = level
         self.lives = 6  # Standard hangman has 6 wrong guesses
         self.state = GameState.PLAYING
@@ -64,6 +78,7 @@ class HangmanGame:
             self.target = random.choice(self.INTERMEDIATE_PHRASES)
 
     def get_display_word(self) -> str:
+        """Get the current word/phrase with guessed letters revealed."""
         if self.level == GameLevel.BASIC:
             # For single words, just put spaces between letters
             display_chars = []
@@ -73,19 +88,20 @@ class HangmanGame:
                 else:
                     display_chars.append("_")
             return " ".join(display_chars)
-        else:
-            # For phrases, need to handle spaces differently
-            display_chars = []
-            for char in self.target:
-                if char == " ":
-                    display_chars.append("  ")  # Double space between words
-                elif char.upper() in self.guessed_letters:
-                    display_chars.append(char + " ")
-                else:
-                    display_chars.append("_ ")
-            return "".join(display_chars).rstrip()
+
+        # For phrases, need to handle spaces differently
+        display_chars = []
+        for char in self.target:
+            if char == " ":
+                display_chars.append("  ")  # Double space between words
+            elif char.upper() in self.guessed_letters:
+                display_chars.append(char + " ")
+            else:
+                display_chars.append("_ ")
+        return "".join(display_chars).rstrip()
 
     def make_guess(self, letter: str) -> bool:
+        """Process a letter guess and return whether it was correct."""
         # Check if input is valid
         if not letter or len(letter) != 1 or not letter.isalpha():
             raise ValueError("Guess must be a single letter")
@@ -110,10 +126,12 @@ class HangmanGame:
         return is_correct
 
     def start_timer(self):
+        """Start the timer for the current guess."""
         # Record when we started timing
         self.timer_start = time.time()
 
     def get_remaining_time(self) -> Optional[int]:
+        """Get the remaining time in seconds for the current guess."""
         if self.timer_start is None:
             return None
 
@@ -122,6 +140,7 @@ class HangmanGame:
         return max(0, int(remaining + 0.5))  # Round up
 
     def is_time_up(self) -> bool:
+        """Check if the timer has expired for the current guess."""
         if self.timer_start is None:
             return False
 
@@ -129,18 +148,22 @@ class HangmanGame:
         return elapsed >= self.timer_duration
 
     def handle_timeout(self):
+        """Handle when the timer expires - player loses a life."""
         # Time's up! Lose a life
         self.lives -= 1
         self._update_game_state()
         self.timer_start = None  # Reset for next guess
 
     def get_guessed_letters(self) -> List[str]:
+        """Get a sorted list of all guessed letters."""
         return sorted(list(self.guessed_letters))
 
     def get_target_answer(self) -> str:
+        """Get the target word/phrase that the player is trying to guess."""
         return self.target
 
     def _update_game_state(self):
+        """Update the game state based on current conditions."""
         # Check if player lost (no lives left)
         if self.lives <= 0:
             self.state = GameState.LOST
@@ -148,6 +171,6 @@ class HangmanGame:
 
         # Check if player won (guessed all letters)
         # Only count actual letters, not spaces
-        tl = set(c.upper() for c in self.target if c.isalpha())
-        if tl.issubset(self.guessed_letters):
+        target_letters = set(char.upper() for char in self.target if char.isalpha())
+        if target_letters.issubset(self.guessed_letters):
             self.state = GameState.WON
